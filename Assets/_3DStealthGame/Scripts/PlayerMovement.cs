@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 public class PlayerMovement : MonoBehaviour
 {
+    AudioSource m_AudioSource;
     public InputAction MoveAction;
     Animator m_Animator;
 
@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start ()
     {
+        m_AudioSource = GetComponent<AudioSource>();
         m_Animator = GetComponent<Animator> ();
 
         m_Rigidbody = GetComponent<Rigidbody> ();
@@ -42,5 +43,16 @@ public class PlayerMovement : MonoBehaviour
         
         m_Rigidbody.MoveRotation (m_Rotation);
         m_Rigidbody.MovePosition (m_Rigidbody.position + m_Movement * walkSpeed * Time.deltaTime);
+        if (isWalking)
+{
+    if (!m_AudioSource.isPlaying)
+    {
+        m_AudioSource.Play();
+    }
+}
+else
+{
+    m_AudioSource.Stop();
+}
     }
 }
