@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
@@ -10,6 +11,10 @@ public class PlayerMovement : MonoBehaviour
 
     public float walkSpeed = 1.0f;
     public float turnSpeed = 20f;
+    private float boostSpeed = 1f;
+    bool boostActive = false;
+    public bool boostReady = true;
+    public GameObject BoostIcon;
 
     Rigidbody m_Rigidbody;
     Vector3 m_Movement;
@@ -38,11 +43,22 @@ public class PlayerMovement : MonoBehaviour
         bool isWalking = hasHorizontalInput || hasVerticalInput;
         m_Animator.SetBool ("IsWalking", isWalking);
 
+        Boost();
+        if (boostReady == true)
+        {
+            BoostIcon.SetActive (true);
+        }
+        else
+        {
+            BoostIcon.SetActive (false);
+        }
+            
+
         Vector3 desiredForward = Vector3.RotateTowards (transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
         m_Rotation = Quaternion.LookRotation (desiredForward);
         
-        m_Rigidbody.MoveRotation (m_Rotation);
-        m_Rigidbody.MovePosition (m_Rigidbody.position + m_Movement * walkSpeed * Time.deltaTime);
+            m_Rigidbody.MoveRotation(m_Rotation);
+        m_Rigidbody.MovePosition (m_Rigidbody.position + m_Movement * walkSpeed * boostSpeed * Time.deltaTime);
         if (isWalking)
 {
     if (!m_AudioSource.isPlaying)
@@ -55,4 +71,25 @@ else
     m_AudioSource.Stop();
 }
     }
+    async Task Boost()
+    {
+        if (boostReady != false && Input.GetButtonDown("Jump"))
+        {
+            boostReady = false;
+            boostActive = true;
+            await Task.Delay (4000);
+            boostActive = false;
+            await Task.Delay(10000);
+            boostReady = true;
+        }
+        if (boostActive == true)
+        {
+            boostSpeed = 3f;
+        }
+        else
+        {
+            boostSpeed = 1f;
+        }
+    }
 }
+    
